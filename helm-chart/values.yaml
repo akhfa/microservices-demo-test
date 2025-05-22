@@ -115,8 +115,10 @@ emailService:
       memory: 128Mi
 
 frontend:
-  host: testfrontend.2akk.top
-  ingressRoute: true
+  minReplicas: 1
+  maxReplicas: 2
+  host: frontendshoptesting.2akk.top
+  ingressRoute: false
   create: true
   name: frontend
   externalService: true
