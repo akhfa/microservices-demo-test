@@ -1,0 +1,52 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [ feat/build-image-and-push ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  find-dockerfiles:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - id: set-matrix
+        name: Find Dockerfiles and create matrix
+        run: |
+          # Find all Dockerfiles recursively and create JSON array
+          DIRS_JSON=$(find . -name "Dockerfile" -type f | xargs -I{} dirname {} | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          
+          # Set matrix output
+          echo "matrix=$DIRS_JSON" >> $GITHUB_OUTPUT
+          echo "Found Dockerfiles in directories: $DIRS_JSON"
+
+  build-and-push:
+    needs: find-dockerfiles
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dir: ${{ fromJson(needs.find-dockerfiles.outputs.matrix) }}
+      fail-fast: false
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Generate short SHA
+        id: sha
+        run: echo "short=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+      
+      - name: Extract repository name from directory
+        id: extract-repo
+        run: |
+          # Get the directory path (remove ./ prefix if present)
+          DIR_PATH="${{ matrix.dir }}"
+          DIR_PATH="${DIR_PATH#./}"
+          echo $DIR_PATH
