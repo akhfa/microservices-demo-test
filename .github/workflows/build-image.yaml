@@ -2,7 +2,7 @@ name: Build and Push Docker Images
 
 on:
   push:
-    branches: [ feat/build-image-and-push ]
+    branches: [ feat/build-image-and-push, main ]
   pull_request:
     branches: [ main ]
 
