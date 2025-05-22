@@ -115,6 +115,8 @@ emailService:
       memory: 128Mi
 
 frontend:
+  host: testfrontend.2akk.top
+  ingressRoute: true
   create: true
   name: frontend
   externalService: true

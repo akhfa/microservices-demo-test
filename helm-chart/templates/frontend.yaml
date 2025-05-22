@@ -14,6 +14,7 @@
 
 {{- if .Values.frontend.create }}
 {{- if .Values.serviceAccounts.create }}
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -25,7 +26,24 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   {{- end }}
+{{- end }}
+{{- if .Values.frontend.ingressRoute }}
 ---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.frontend.name }}
+  namespace: {{.Release.Namespace}}
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.frontend.host }}`)
+    priority: 10
+    services:
+    - name: frontend
+      port: 80
 {{- end }}
 apiVersion: apps/v1
 kind: Deployment
