@@ -50,3 +50,16 @@ jobs:
           DIR_PATH="${{ matrix.dir }}"
           DIR_PATH="${DIR_PATH#./}"
           echo $DIR_PATH
+
+          # Split by '/' and get the 2nd part
+          IFS='/' read -ra PARTS <<< "$DIR_PATH"
+
+          if [ "${#PARTS[@]}" -eq 2 ]; then
+            REPO_NAME="${PARTS[1]}"
+          else
+            echo "failed to get directory"
+            exit 1
+          fi
+
+          echo "repo_name=$REPO_NAME" >> $GITHUB_OUTPUT
+          echo "Repository name: $REPO_NAME"
