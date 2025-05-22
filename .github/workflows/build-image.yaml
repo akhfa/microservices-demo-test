@@ -79,4 +79,6 @@ jobs:
         with:
           context: ${{ matrix.dir }}
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ steps.extract-repo.outputs.repo_name }}:${{ steps.sha.outputs.short }}
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ steps.extract-repo.outputs.repo_name }}:${{ steps.sha.outputs.short }}
+            ghcr.io/${{ github.repository_owner }}/${{ steps.extract-repo.outputs.repo_name }}:latest
